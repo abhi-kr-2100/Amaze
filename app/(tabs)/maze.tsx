@@ -1,6 +1,9 @@
 import { createElement } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { RectangleToComponent } from "@/components/rectangles/common";
+import {
+  RECTANGLE_NAMES,
+  RectangleToComponent,
+} from "@/components/rectangles/common";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { rectangleChanged } from "@/features/maze/maze-slice";
 
@@ -9,10 +12,15 @@ export default function MazeScreen() {
   const rectangles = useAppSelector((state) => state.maze.rectangles);
 
   const toggleRectAt = (r: number, c: number) => {
+    const newRectIdx =
+      (RECTANGLE_NAMES.findIndex((v) => v === rectangles[r][c]) + 1) %
+      RECTANGLE_NAMES.length;
+    const newRect = RECTANGLE_NAMES[newRectIdx];
+
     dispatch(
       rectangleChanged({
         coord: [r, c],
-        newRect: rectangles[r][c] === "Path" ? "Wall" : "Path",
+        newRect,
       })
     );
   };
