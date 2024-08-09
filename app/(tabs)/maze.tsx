@@ -1,6 +1,6 @@
 import { createElement } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { RectangleToComponent } from "@/features/maze/filling-strategies";
+import { RectangleToComponent } from "@/components/rectangles/common";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { rectangleChanged } from "@/features/maze/maze-slice";
 

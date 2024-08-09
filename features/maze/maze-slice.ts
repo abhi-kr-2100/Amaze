@@ -1,9 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import defaultMaze from "./default-maze";
-import fillingStrategies, {
-  FillingStrategy,
-  RectangleName,
-} from "./filling-strategies";
+import fillingStrategies, { FillingStrategy } from "./filling-strategies";
+import { RectangleName } from "@/components/rectangles/common";
 
 export interface MazeState {
   nrows: number;
