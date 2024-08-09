@@ -57,9 +57,7 @@ class DFSIterator implements Iterator<SingleMazeDiff[], any, undefined> {
   }
 
   next(...args: [] | [undefined]): IteratorResult<SingleMazeDiff[], any> {
-    console.log("next:");
     if (this.#toVisitStack.length === 0) {
-      console.log("#toVisitStack exhausted");
       return {
         value: undefined,
         done: true,
@@ -67,9 +65,7 @@ class DFSIterator implements Iterator<SingleMazeDiff[], any, undefined> {
     }
 
     const [r, c] = this.#toVisitStack.pop()!;
-    console.log(`visiting ${r},${c}`);
     if (r === this.#treasure[0] && c === this.#treasure[1]) {
-      console.log(`treasure found`);
       return {
         value: [{ coord: [r, c], newRect: this.#maze[r][c] }],
         done: true,
@@ -80,11 +76,7 @@ class DFSIterator implements Iterator<SingleMazeDiff[], any, undefined> {
 
     [this.#upOf, this.#downOf, this.#leftOf, this.#rightOf]
       .filter((direction) => this.#canVisit(direction([r, c])))
-      .forEach((direction) => {
-        const toVisit = direction([r, c]);
-        console.log(`to visit next ${toVisit}`);
-        this.#toVisitStack.push(toVisit);
-      });
+      .forEach((direction) => this.#toVisitStack.push(direction([r, c])));
 
     return {
       value: [
