@@ -1,10 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import defaultMaze from "./default-maze";
+import fillingStrategies, {
+  FillingStrategy,
+  RectangleName,
+} from "./filling-strategies";
 
 export interface MazeState {
   nrows: number;
   ncols: number;
-  rectangles: any[][];
+  rectangles: RectangleName[][];
+  fillingStrategy: FillingStrategy;
 }
 
 const mazeSlice = createSlice({
@@ -22,12 +27,25 @@ const mazeSlice = createSlice({
           if (state.rectangles.length < r && state.rectangles[r].length < c) {
             newRects[r].push(state.rectangles[r][c]);
           } else {
-            newRects[r].push(0);
+            newRects[r].push(fillingStrategies[state.fillingStrategy](r, c));
           }
         }
       }
 
       state.rectangles = newRects;
+    },
+
+    fillingStrategyChanged(state, action: PayloadAction<FillingStrategy>) {
+      state.fillingStrategy = action.payload;
+
+      for (let r = 0; r < state.nrows; ++r) {
+        for (let c = 0; c < state.ncols; ++c) {
+          state.rectangles[r][c] = fillingStrategies[state.fillingStrategy](
+            r,
+            c
+          );
+        }
+      }
     },
   },
 });
