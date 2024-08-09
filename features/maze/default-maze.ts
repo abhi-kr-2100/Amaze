@@ -4,13 +4,14 @@ import { MazeState } from "./maze-slice";
 export const DEFAULT_NROWS = 10;
 export const DEFAULT_NCOLS = 20;
 
+export const DEFAULT_FILLING_STRATEGY = "Random" as FillingStrategy;
+
 export default {
   nrows: DEFAULT_NROWS,
   ncols: DEFAULT_NCOLS,
-  rectangles: Array.from(Array(DEFAULT_NROWS), (_, c) =>
-    Array.from(Array(DEFAULT_NCOLS), (_, r) =>
-      fillingStrategies["Random"](r, c)
-    )
+  rectangles: fillingStrategies[DEFAULT_FILLING_STRATEGY](
+    DEFAULT_NROWS,
+    DEFAULT_NCOLS
   ),
-  fillingStrategy: "Random" as FillingStrategy,
+  fillingStrategy: DEFAULT_FILLING_STRATEGY,
 } as MazeState;

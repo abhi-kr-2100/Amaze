@@ -18,14 +18,17 @@ const mazeSlice = createSlice({
       state.nrows = action.payload[0];
       state.ncols = action.payload[1];
 
-      let newRects: any[][] = [];
+      let newRects = fillingStrategies[state.fillingStrategy](
+        state.nrows,
+        state.ncols
+      );
+
+      const prevNRows = state.rectangles.length;
+      const prevNCols = prevNRows !== 0 ? state.rectangles[0].length : 0;
       for (let r = 0; r < state.nrows; ++r) {
-        newRects.push([]);
         for (let c = 0; c < state.ncols; ++c) {
-          if (state.rectangles.length < r && state.rectangles[r].length < c) {
-            newRects[r].push(state.rectangles[r][c]);
-          } else {
-            newRects[r].push(fillingStrategies[state.fillingStrategy](r, c));
+          if (r < prevNRows && c < prevNCols) {
+            newRects[r][c] = state.rectangles[r][c];
           }
         }
       }
@@ -35,15 +38,10 @@ const mazeSlice = createSlice({
 
     fillingStrategyChanged(state, action: PayloadAction<FillingStrategy>) {
       state.fillingStrategy = action.payload;
-
-      for (let r = 0; r < state.nrows; ++r) {
-        for (let c = 0; c < state.ncols; ++c) {
-          state.rectangles[r][c] = fillingStrategies[state.fillingStrategy](
-            r,
-            c
-          );
-        }
-      }
+      state.rectangles = fillingStrategies[state.fillingStrategy](
+        state.nrows,
+        state.ncols
+      );
     },
 
     rectangleChanged(

@@ -4,9 +4,13 @@ import sample from "lodash/sample";
 export type FillingStrategy = "Random";
 
 export default {
-  ["Random" as FillingStrategy]: GetRandomRectangle,
+  ["Random" as FillingStrategy]: GetRandomlyFilledMaze,
 };
 
-function GetRandomRectangle(r: number, c: number) {
-  return sample(RECTANGLE_NAMES)!;
+function GetRandomlyFilledMaze(nrows: number, ncols: number) {
+  const maze = Array.from(Array(nrows), () =>
+    Array.from(Array(ncols), () => sample(RECTANGLE_NAMES)!)
+  );
+
+  return maze;
 }
