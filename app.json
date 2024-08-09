@@ -3,9 +3,9 @@
     "name": "Amaze",
     "slug": "Amaze",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "amaze",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
