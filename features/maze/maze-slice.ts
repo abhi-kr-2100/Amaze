@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import defaultMaze from "./default-maze";
 import fillingStrategies, { FillingStrategy } from "./filling-strategies";
 import { RectangleName } from "@/components/rectangles/common";
+import { SingleMazeDiff } from "../search/ISearch";
 
 export interface MazeState {
   nrows: number;
@@ -52,9 +53,19 @@ const mazeSlice = createSlice({
 
       state.rectangles[coord[0]][coord[1]] = newRect;
     },
+
+    rectanglesChanged(state, action: PayloadAction<SingleMazeDiff[]>) {
+      for (var diff of action.payload) {
+        state.rectangles[diff.coord[0]][diff.coord[1]] = diff.newRect;
+      }
+    },
   },
 });
 
-export const { resized, fillingStrategyChanged, rectangleChanged } =
-  mazeSlice.actions;
+export const {
+  resized,
+  fillingStrategyChanged,
+  rectangleChanged,
+  rectanglesChanged,
+} = mazeSlice.actions;
 export default mazeSlice.reducer;
