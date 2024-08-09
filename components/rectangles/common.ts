@@ -19,3 +19,9 @@ export const RectangleToComponent = {
 };
 
 export type RectangleName = "Wall" | "Path" | "Agent" | "Treasure";
+export const RECTANGLE_NAMES = [
+  "Wall",
+  "Path",
+  "Agent",
+  "Treasure",
+] as RectangleName[];
