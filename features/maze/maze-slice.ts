@@ -47,6 +47,15 @@ const mazeSlice = createSlice({
         }
       }
     },
+
+    rectangleChanged(
+      state,
+      action: PayloadAction<{ coord: [number, number]; newRect: RectangleName }>
+    ) {
+      const { coord, newRect } = action.payload;
+
+      state.rectangles[coord[0]][coord[1]] = newRect;
+    },
   },
 });
 
