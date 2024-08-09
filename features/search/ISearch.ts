@@ -1,15 +1,16 @@
 import { RectangleName } from "@/components/rectangles/common";
+import { Coord2D } from "../maze/common";
 
 export type SingleMazeDiff = {
-  coord: [number, number];
+  coord: Coord2D;
   newRect: RectangleName;
 };
 
 export interface SearchConstructor {
   new (
     maze: RectangleName[][],
-    agents: [number, number][],
-    treasures: [number, number][]
+    agents: Coord2D[],
+    treasures: Coord2D[]
   ): ISearch;
 }
 

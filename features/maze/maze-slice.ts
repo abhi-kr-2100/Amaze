@@ -3,6 +3,7 @@ import defaultMaze from "./default-maze";
 import fillingStrategies, { FillingStrategy } from "./filling-strategies";
 import { RectangleName } from "@/components/rectangles/common";
 import { SingleMazeDiff } from "../search/ISearch";
+import { Coord2D } from "./common";
 
 export interface MazeState {
   nrows: number;
@@ -47,7 +48,7 @@ const mazeSlice = createSlice({
 
     rectangleChanged(
       state,
-      action: PayloadAction<{ coord: [number, number]; newRect: RectangleName }>
+      action: PayloadAction<{ coord: Coord2D; newRect: RectangleName }>
     ) {
       const { coord, newRect } = action.payload;
 
