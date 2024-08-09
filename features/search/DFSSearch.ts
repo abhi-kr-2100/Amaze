@@ -1,15 +1,16 @@
-import { RectangleName } from "@/components/rectangles/common";
+import { isRectPathType, RectangleName } from "@/components/rectangles/common";
 import ISearch, { SingleMazeDiff } from "./ISearch";
+import { Coord2D } from "../maze/common";
 
 export default class DFSSearch implements ISearch {
   #maze: RectangleName[][];
-  #agent: [number, number];
-  #treasure: [number, number];
+  #agent: Coord2D;
+  #treasure: Coord2D;
 
   constructor(
     maze: RectangleName[][],
-    agents: [number, number][],
-    treasures: [number, number][]
+    agents: Coord2D[],
+    treasures: Coord2D[]
   ) {
     if (agents.length !== 1 && treasures.length !== 1) {
       throw new Error(
@@ -29,19 +30,23 @@ export default class DFSSearch implements ISearch {
 
 class DFSIterator implements Iterator<SingleMazeDiff[], any, undefined> {
   #maze: RectangleName[][];
-  #agent: [number, number];
-  #treasure: [number, number];
+  #agent: Coord2D;
+  #treasure: Coord2D;
+
+  #done: boolean = false;
 
   // Coords (JS arrays) can't be compared for equality reliably.
   // Store coord.toString() instead
   #visitedRectCoords: Set<string> = new Set();
 
-  #toVisitStack: [number, number][] = [];
+  // information about parent lets us reconstruct the path
+  #toVisitStack: CoordWithParent[] = [];
+  #currentPath: CoordWithParent[] = [];
 
   constructor(
     maze: RectangleName[][],
-    agents: [number, number][],
-    treasures: [number, number][]
+    agents: Coord2D[],
+    treasures: Coord2D[]
   ) {
     if (agents.length !== 1 && treasures.length !== 1) {
       throw new Error(
@@ -53,62 +58,102 @@ class DFSIterator implements Iterator<SingleMazeDiff[], any, undefined> {
     this.#agent = agents[0];
     this.#treasure = treasures[0];
 
-    this.#toVisitStack.push(this.#agent);
+    this.#toVisitStack.push({ coord: this.#agent });
   }
 
   next(...args: [] | [undefined]): IteratorResult<SingleMazeDiff[], any> {
+    if (this.#done) {
+      return { value: undefined, done: true };
+    }
+
     if (this.#toVisitStack.length === 0) {
+      this.#done = true;
+
+      const diffs = this.#getDiffsForContext("EXHAUSTED");
+      this.#currentPath = [];
+
       return {
-        value: undefined,
-        done: true,
+        value: diffs,
+        done: false,
       };
     }
 
-    const [r, c] = this.#toVisitStack.pop()!;
+    const {
+      coord: [r, c],
+      parent,
+    } = this.#toVisitStack.pop()!;
+    this.#currentPath.push({ coord: [r, c], parent });
+
     if (r === this.#treasure[0] && c === this.#treasure[1]) {
+      this.#done = true;
+
+      const diffs = this.#getDiffsForContext("FOUND");
+      this.#currentPath = [];
+
       return {
-        value: [{ coord: [r, c], newRect: this.#maze[r][c] }],
-        done: true,
+        value: diffs,
+        done: false,
       };
     }
 
     this.#visitedRectCoords.add([r, c].toString());
 
-    [this.#upOf, this.#downOf, this.#leftOf, this.#rightOf]
-      .filter((direction) => this.#canVisit(direction([r, c])))
-      .forEach((direction) => this.#toVisitStack.push(direction([r, c])));
+    const toVisitNext = [
+      this.#leftOf,
+      this.#downOf,
+      this.#rightOf,
+      this.#upOf,
+    ].filter((direction) => this.#canVisit(direction([r, c])));
+
+    toVisitNext.forEach((direction) =>
+      this.#toVisitStack.push({ coord: direction([r, c]), parent: [r, c] })
+    );
+
+    if (toVisitNext.length === 0) {
+      const diffs = this.#getDiffsForContext("STUCK");
+      const numToAbandon = this.#getCoordsToAbandonOnStuck().length;
+      this.#currentPath.splice(-numToAbandon);
+
+      return {
+        value: diffs,
+        done: false,
+      };
+    }
 
     return {
-      value: [
-        {
-          coord: [r, c],
-          newRect:
-            r === this.#agent[0] && c === this.#agent[1]
-              ? this.#maze[r][c]
-              : "Visited",
-        },
-      ],
+      value: [],
       done: false,
     };
   }
 
-  #upOf(coord: [number, number]): [number, number] {
+  return?(value?: any): IteratorResult<SingleMazeDiff[], any> {
+    return {
+      value,
+      done: true,
+    };
+  }
+
+  throw?(e?: any): IteratorResult<SingleMazeDiff[], any> {
+    throw new Error("Method not implemented.");
+  }
+
+  #upOf(coord: Coord2D): Coord2D {
     return [coord[0] - 1, coord[1]];
   }
 
-  #downOf(coord: [number, number]): [number, number] {
+  #downOf(coord: Coord2D): Coord2D {
     return [coord[0] + 1, coord[1]];
   }
 
-  #leftOf(coord: [number, number]): [number, number] {
+  #leftOf(coord: Coord2D): Coord2D {
     return [coord[0], coord[1] - 1];
   }
 
-  #rightOf(coord: [number, number]): [number, number] {
+  #rightOf(coord: Coord2D): Coord2D {
     return [coord[0], coord[1] + 1];
   }
 
-  #canVisit(coord: [number, number]) {
+  #canVisit(coord: Coord2D) {
     const [r, c] = coord;
 
     return (
@@ -122,14 +167,72 @@ class DFSIterator implements Iterator<SingleMazeDiff[], any, undefined> {
     );
   }
 
-  return?(value?: any): IteratorResult<SingleMazeDiff[], any> {
-    return {
-      value,
-      done: true,
-    };
+  #getDiffsForContext(
+    extraContext: "EXHAUSTED" | "FOUND" | "STUCK"
+  ): SingleMazeDiff[] {
+    if (this.#currentPath.length === 0) {
+      return [];
+    }
+
+    if (extraContext === "STUCK") {
+      const toAbandon = this.#getCoordsToAbandonOnStuck();
+      return toAbandon
+        .filter((coord) => isRectPathType(this.#maze[coord[0]][coord[1]]))
+        .map((coord) => ({
+          coord,
+          newRect: "PathAbandoned",
+        }));
+    }
+
+    return this.#currentPath
+      .filter(({ coord: [r, c] }) => isRectPathType(this.#maze[r][c]))
+      .map(({ coord }) => ({
+        coord,
+        newRect: extraContext === "FOUND" ? "PathTaken" : "PathAbandoned",
+      }));
   }
 
-  throw?(e?: any): IteratorResult<SingleMazeDiff[], any> {
-    throw new Error("Method not implemented.");
+  /**
+   * When the visit stack is exhausted or when the treasure is found,
+   * we can, reject or accept the entire path. However, when we're
+   * stuck, but we can go backtrack, we must calculate how many steps
+   * back.
+   *
+   * Here's the goal: go back to the parent of an unvisited rect in
+   * #toVisitStack. The parent is guaranteed to have occurred on the
+   * current path. Hence, we can safely backtrack to the parent. */
+  #getCoordsToAbandonOnStuck(): Coord2D[] {
+    let toAbandon = [];
+
+    const nextVisit = this.#toVisitStack.findLast(({ coord }) =>
+      this.#canVisit(coord)
+    );
+
+    if (nextVisit === undefined) {
+      return this.#currentPath.map(({ coord }) => coord);
+    }
+
+    const targetParent = nextVisit.parent;
+
+    for (let i = 1; i <= this.#currentPath.length; ++i) {
+      const { coord: currCoord, parent: currParent } = this.#currentPath.at(
+        -i
+      )!;
+      if (
+        currCoord[0] === targetParent?.[0] &&
+        currCoord[1] === targetParent?.[1]
+      ) {
+        break;
+      }
+
+      toAbandon.push(currCoord);
+    }
+
+    return toAbandon;
   }
+}
+
+interface CoordWithParent {
+  coord: Coord2D;
+  parent?: Coord2D;
 }
