@@ -59,4 +59,6 @@ const mazeSlice = createSlice({
   },
 });
 
+export const { resized, fillingStrategyChanged, rectangleChanged } =
+  mazeSlice.actions;
 export default mazeSlice.reducer;
