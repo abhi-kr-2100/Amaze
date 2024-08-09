@@ -1,7 +1,7 @@
 import { StyleSheet, View, ViewStyle } from "react-native";
 import { RectangleProps } from "./common";
 
-export default function VisitedRectangle({
+export default function PathTakenRectangle({
   height,
   width,
   style,
@@ -20,10 +20,10 @@ export default function VisitedRectangle({
   );
 }
 
-const VISITED_BG_COLOR = "red";
+const PATH_TAKEN_BG_COLOR = "green";
 
 const defaultStyle = StyleSheet.create({
   root: {
-    backgroundColor: VISITED_BG_COLOR,
+    backgroundColor: PATH_TAKEN_BG_COLOR,
   },
 });

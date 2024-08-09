@@ -4,7 +4,9 @@ import PathRectangle from "./PathRectangle";
 import WallRectangle from "./WallRectangle";
 import AgentRectangle from "./AgentRectangle";
 import TreasureRectangle from "./TreasureRectangle";
-import VisitedRectangle from "./VisitedRectangle";
+import PathVisitedRectangle from "./PathVisitedRectangle";
+import PathTakenRectangle from "./PathTakenRectangle";
+import PathAbandonedRectangle from "./PathAbandonedRectangle";
 
 export interface RectangleProps<T> {
   height: number;
@@ -17,14 +19,29 @@ export const RectangleToComponent = {
   ["Path" as RectangleName]: PathRectangle,
   ["Agent" as RectangleName]: AgentRectangle,
   ["Treasure" as RectangleName]: TreasureRectangle,
-  ["Visited" as RectangleName]: VisitedRectangle,
+  ["PathVisited" as RectangleName]: PathVisitedRectangle,
+  ["PathTaken" as RectangleName]: PathTakenRectangle,
+  ["PathAbandoned" as RectangleName]: PathAbandonedRectangle,
 };
 
-export type RectangleName = "Wall" | "Path" | "Agent" | "Treasure" | "Visited";
+export type RectangleName =
+  | "Wall"
+  | "Path"
+  | "Agent"
+  | "Treasure"
+  | "PathVisited"
+  | "PathTaken"
+  | "PathAbandoned";
 export const RECTANGLE_NAMES = [
   "Wall",
   "Path",
   "Agent",
   "Treasure",
-  "Visited",
+  "PathVisited",
+  "PathTaken",
+  "PathAbandoned",
 ] as RectangleName[];
+
+export function isRectPathType(rect: RectangleName) {
+  return rect.startsWith("Path");
+}
