@@ -4,7 +4,8 @@ import { MazeState } from "./maze-slice";
 export const DEFAULT_NROWS = 10;
 export const DEFAULT_NCOLS = 20;
 
-export const DEFAULT_FILLING_STRATEGY = "Random" as FillingStrategy;
+export const DEFAULT_FILLING_STRATEGY: FillingStrategy =
+  "RandomWithAAndTOnCorners";
 
 export default {
   nrows: DEFAULT_NROWS,
