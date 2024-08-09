@@ -1,22 +1,33 @@
 import { createElement } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { RectangleToComponent } from "@/features/maze/filling-strategies";
-import { useAppSelector } from "@/hooks/redux";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { rectangleChanged } from "@/features/maze/maze-slice";
 
 export default function MazeScreen() {
+  const dispatch = useAppDispatch();
   const rectangles = useAppSelector((state) => state.maze.rectangles);
+
+  const toggleRectAt = (r: number, c: number) => {
+    dispatch(
+      rectangleChanged({
+        coord: [r, c],
+        newRect: rectangles[r][c] === "Path" ? "Wall" : "Path",
+      })
+    );
+  };
 
   return (
     <View style={styles.maze}>
       {rectangles.map((row, r) => (
         <View style={styles.mazeRow} key={r}>
           {row.map((cell, c) => (
-            <View key={c}>
+            <TouchableOpacity onPress={() => toggleRectAt(r, c)} key={c}>
               {createElement(RectangleToComponent[cell], {
                 height: 32,
                 width: 32,
               })}
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       ))}
