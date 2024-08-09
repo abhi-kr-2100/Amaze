@@ -1,6 +1,7 @@
 import { isRectPathType, RectangleName } from "@/components/rectangles/common";
 import ISearch, { SingleMazeDiff } from "./ISearch";
 import { Coord2D } from "../maze/common";
+import shuffle from "lodash/shuffle";
 
 export default class DFSSearch implements ISearch {
   #maze: RectangleName[][];
@@ -98,12 +99,12 @@ class DFSIterator implements Iterator<SingleMazeDiff[], any, undefined> {
 
     this.#visitedRectCoords.add([r, c].toString());
 
-    const toVisitNext = [
+    const toVisitNext = shuffle([
       this.#leftOf,
       this.#downOf,
       this.#rightOf,
       this.#upOf,
-    ].filter((direction) => this.#canVisit(direction([r, c])));
+    ]).filter((direction) => this.#canVisit(direction([r, c])));
 
     toVisitNext.forEach((direction) =>
       this.#toVisitStack.push({ coord: direction([r, c]), parent: [r, c] })
