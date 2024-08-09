@@ -1,7 +1,7 @@
+import { createElement } from "react";
+import { StyleSheet, View } from "react-native";
 import { RectangleToComponent } from "@/features/maze/filling-strategies";
 import { useAppSelector } from "@/hooks/redux";
-import { createElement } from "react";
-import { View, Text, StyleSheet } from "react-native";
 
 export default function MazeScreen() {
   const rectangles = useAppSelector((state) => state.maze.rectangles);
@@ -12,7 +12,7 @@ export default function MazeScreen() {
         <View style={styles.mazeRow} key={r}>
           {row.map((cell, c) => (
             <View key={c}>
-              {createElement(RectangleToComponent[rectangles[r][c]], {
+              {createElement(RectangleToComponent[cell], {
                 height: 32,
                 width: 32,
               })}
