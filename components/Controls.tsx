@@ -1,13 +1,51 @@
-import { Button, View } from "react-native";
+import {
+  searchAlgorithmChanged,
+  searchingStatusChanged,
+} from "@/features/controls/controls-slice";
+import { SearchNameToFriendlyName } from "@/features/search/common";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { Button, StyleSheet, Text, View } from "react-native";
+import SelectDropdown from "react-native-select-dropdown";
 
-export default function Controls({ onSearch }: ControlsProps) {
+const searchAlgorithms = Object.entries(SearchNameToFriendlyName).map(
+  ([id, title]) => ({
+    id,
+    title,
+  })
+);
+
+export default function Controls() {
+  const dispatch = useAppDispatch();
+
+  const selectedSearchAlgorithm = useAppSelector(
+    (state) => state.controls.selectedSearchAlgorithm
+  );
+  const isSearching = useAppSelector((state) => state.controls.isSearching);
+
   return (
-    <View>
-      <Button title="Search!" onPress={onSearch} />
+    <View style={styles.root}>
+      <SelectDropdown
+        data={searchAlgorithms}
+        onSelect={(item) => dispatch(searchAlgorithmChanged(item.id))}
+        renderButton={() => (
+          <View>
+            <Text>{SearchNameToFriendlyName[selectedSearchAlgorithm]}</Text>
+          </View>
+        )}
+        renderItem={(item) => <Text>{item.title}</Text>}
+      />
+      <Button
+        title="Search!"
+        onPress={() => dispatch(searchingStatusChanged(true))}
+        disabled={isSearching}
+      />
     </View>
   );
 }
 
-export interface ControlsProps {
-  onSearch: () => any;
-}
+const styles = StyleSheet.create({
+  root: {
+    display: "flex",
+    gap: 10,
+  },
+});

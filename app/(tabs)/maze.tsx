@@ -1,37 +1,42 @@
 import Controls from "@/components/Controls";
 import Maze from "@/components/Maze";
 import { RECTANGLE_NAMES } from "@/components/rectangles/common";
+import { searchingStatusChanged } from "@/features/controls/controls-slice";
 import { Coord2D } from "@/features/maze/common";
 import {
   rectangleChanged,
   rectanglesChanged,
 } from "@/features/maze/maze-slice";
-import DFSSearch from "@/features/search/DFSSearch";
+import { SearchNameToSearch } from "@/features/search/common";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
 export default function MazeScreen() {
   const dispatch = useAppDispatch();
+
   const maze = useAppSelector((state) => state.maze.rectangles);
 
-  const [isSearching, setIsSearching] = useState(false);
-
-  const dfs = new DFSSearch(
-    maze,
-    [[maze.length - 1, 0]],
-    [[0, maze[0].length - 1]]
+  const searchAlgorithmName = useAppSelector(
+    (state) => state.controls.selectedSearchAlgorithm
   );
+  const isSearching = useAppSelector((state) => state.controls.isSearching);
 
   useEffect(() => {
     if (!isSearching) {
       return;
     }
 
+    const search = new SearchNameToSearch[searchAlgorithmName](
+      maze,
+      [[maze.length - 1, 0]],
+      [[0, maze[0].length - 1]]
+    );
+
     let diffs = [];
 
     let i = 0;
-    for (var diff of dfs) {
+    for (var diff of search) {
       ++i;
 
       diffs.push(...diff);
@@ -41,7 +46,7 @@ export default function MazeScreen() {
       }
     }
 
-    setIsSearching(false);
+    dispatch(searchingStatusChanged(false));
     dispatch(rectanglesChanged(diffs));
   }, [isSearching]);
 
@@ -70,7 +75,7 @@ export default function MazeScreen() {
         })}
         style={styles}
       />
-      <Controls onSearch={() => setIsSearching(true)} />
+      <Controls />
     </View>
   );
 }
