@@ -1,17 +1,15 @@
-import { createElement, useEffect, useState } from "react";
-import { Button, StyleSheet, TouchableOpacity, View } from "react-native";
-import {
-  RECTANGLE_NAMES,
-  RectangleToComponent,
-} from "@/components/rectangles/common";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import Controls from "@/components/Controls";
+import Maze from "@/components/Maze";
+import { RECTANGLE_NAMES } from "@/components/rectangles/common";
+import { Coord2D } from "@/features/maze/common";
 import {
   rectangleChanged,
   rectanglesChanged,
 } from "@/features/maze/maze-slice";
 import DFSSearch from "@/features/search/DFSSearch";
-import Maze from "@/components/Maze";
-import { Coord2D } from "@/features/maze/common";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 
 export default function MazeScreen() {
   const dispatch = useAppDispatch();
@@ -72,7 +70,7 @@ export default function MazeScreen() {
         })}
         style={styles}
       />
-      <Button title="Search!" onPress={() => setIsSearching(true)} />
+      <Controls onSearch={() => setIsSearching(true)} />
     </View>
   );
 }
