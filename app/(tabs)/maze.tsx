@@ -10,6 +10,8 @@ import {
   rectanglesChanged,
 } from "@/features/maze/maze-slice";
 import DFSSearch from "@/features/search/DFSSearch";
+import Maze from "@/components/Maze";
+import { Coord2D } from "@/features/maze/common";
 
 export default function MazeScreen() {
   const dispatch = useAppDispatch();
@@ -45,7 +47,7 @@ export default function MazeScreen() {
     dispatch(rectanglesChanged(diffs));
   }, [isSearching]);
 
-  const toggleRectAt = (r: number, c: number) => {
+  const toggleRectAt = ([r, c]: Coord2D) => {
     const newRectIdx =
       (RECTANGLE_NAMES.findIndex((v) => v === maze[r][c]) + 1) %
       RECTANGLE_NAMES.length;
@@ -61,20 +63,15 @@ export default function MazeScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.maze}>
-        {maze.map((row, r) => (
-          <View style={styles.mazeRow} key={r}>
-            {row.map((cell, c) => (
-              <TouchableOpacity onPress={() => toggleRectAt(r, c)} key={c}>
-                {createElement(RectangleToComponent[cell], {
-                  height: 32,
-                  width: 32,
-                })}
-              </TouchableOpacity>
-            ))}
-          </View>
-        ))}
-      </View>
+      <Maze
+        maze={maze}
+        onRectPress={toggleRectAt}
+        rectDimensions={() => ({
+          height: 32,
+          width: 32,
+        })}
+        style={styles}
+      />
       <Button title="Search!" onPress={() => setIsSearching(true)} />
     </View>
   );
