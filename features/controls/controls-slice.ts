@@ -19,14 +19,12 @@ const controlsSlice = createSlice({
       state.selectedSearchAlgorithm = action.payload;
     },
 
-    isSearchingStatusChanged(state, action: PayloadAction<boolean>) {
+    searchingStatusChanged(state, action: PayloadAction<boolean>) {
       state.isSearching = action.payload;
     },
   },
 });
 
-export const {
-  searchAlgorithmChanged,
-  isSearchingStatusChanged: isSearchingSet,
-} = controlsSlice.actions;
+export const { searchAlgorithmChanged, searchingStatusChanged } =
+  controlsSlice.actions;
 export default controlsSlice.reducer;
