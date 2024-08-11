@@ -16,6 +16,9 @@ export default function MazeScreen() {
   const dispatch = useAppDispatch();
 
   const maze = useAppSelector((state) => state.maze.rectangles);
+  const selectedRectName = useAppSelector(
+    (state) => state.controls.selectedRectName
+  );
 
   const searchAlgorithmName = useAppSelector(
     (state) => state.controls.selectedSearchAlgorithm
@@ -50,11 +53,8 @@ export default function MazeScreen() {
     dispatch(rectanglesChanged(diffs));
   }, [isSearching]);
 
-  const toggleRectAt = ([r, c]: Coord2D) => {
-    const newRectIdx =
-      (RECTANGLE_NAMES.findIndex((v) => v === maze[r][c]) + 1) %
-      RECTANGLE_NAMES.length;
-    const newRect = RECTANGLE_NAMES[newRectIdx];
+  const setRectAt = ([r, c]: Coord2D) => {
+    const newRect = selectedRectName;
 
     dispatch(
       rectangleChanged({
@@ -68,7 +68,7 @@ export default function MazeScreen() {
     <View style={styles.container}>
       <Maze
         maze={maze}
-        onRectPress={toggleRectAt}
+        onRectPress={setRectAt}
         rectDimensions={() => ({
           height: 32,
           width: 32,
