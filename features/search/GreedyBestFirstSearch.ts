@@ -1,6 +1,6 @@
 import { isRectPathType, RectangleName } from "@/components/rectangles/common";
 import ISearch, { SingleMazeDiff } from "./ISearch";
-import { Coord2D } from "../maze/common";
+import { Coord2D, CoordToKey, KeyToCoord } from "../maze/common";
 import shuffle from "lodash/shuffle";
 
 export default class ManhattanGreedyBestFirstSearch implements ISearch {
@@ -81,7 +81,7 @@ class BestFirstSearchIterator
   #done: boolean = false;
 
   // Coords (JS arrays) can't be compared for equality reliably.
-  // Store coord.toString() instead
+  // Store a string version of the coords instead
   visitedRectCoords: Set<string> = new Set();
   coordToParent: Map<string, Coord2D | undefined> = new Map();
 
@@ -106,7 +106,7 @@ class BestFirstSearchIterator
     this.#heuristicFn = heuristicFn;
 
     this.toVisitStack.push(this.#agent);
-    this.coordToParent.set(this.#agent.toString(), undefined);
+    this.coordToParent.set(CoordToKey(this.#agent), undefined);
   }
 
   next(...args: [] | [undefined]): IteratorResult<SingleMazeDiff[], any> {
@@ -117,8 +117,10 @@ class BestFirstSearchIterator
     if (this.toVisitStack.length === 0) {
       this.#done = true;
 
+      const diffs = this.#getDiffsForContext("EXHAUSTED");
+
       return {
-        value: [],
+        value: diffs,
         done: false,
       };
     }
@@ -137,20 +139,34 @@ class BestFirstSearchIterator
       };
     }
 
-    this.visitedRectCoords.add([r, c].toString());
+    this.visitedRectCoords.add(CoordToKey([r, c]));
 
-    shuffle([this.#leftOf, this.#downOf, this.#rightOf, this.#upOf])
-      .filter((direction) => this.#canVisit(direction([r, c])))
-      .forEach((direction) => {
-        const nextCoord = direction([r, c]);
-        const key = nextCoord.toString();
+    const toVisitNext = shuffle([
+      this.#leftOf,
+      this.#downOf,
+      this.#rightOf,
+      this.#upOf,
+    ]).filter((direction) => this.#canVisit(direction([r, c])));
 
-        if (!this.coordToParent.has(key)) {
-          this.coordToParent.set(key, [r, c]);
-        }
+    toVisitNext.forEach((direction) => {
+      const nextCoord = direction([r, c]);
+      const key = CoordToKey(nextCoord);
 
-        this.toVisitStack.push(nextCoord);
-      });
+      if (!this.coordToParent.has(key)) {
+        this.coordToParent.set(key, [r, c]);
+      }
+
+      this.toVisitStack.push(nextCoord);
+    });
+
+    if (toVisitNext.length === 0) {
+      const difss = this.#getDiffsForContext("STUCK", [r, c]);
+
+      return {
+        value: difss,
+        done: false,
+      };
+    }
 
     return {
       value: [],
@@ -195,7 +211,7 @@ class BestFirstSearchIterator
       this.#maze.length > 0 &&
       c < this.#maze[0].length &&
       this.#maze[r][c] !== "Wall" &&
-      !this.visitedRectCoords.has([r, c].toString())
+      !this.visitedRectCoords.has(CoordToKey([r, c]))
     );
   }
 
@@ -221,20 +237,47 @@ class BestFirstSearchIterator
     extraContext: "EXHAUSTED" | "FOUND" | "STUCK",
     currentCoord?: Coord2D
   ): SingleMazeDiff[] {
-    let path = [];
-    for (
-      let c = currentCoord;
-      c !== undefined;
-      c = this.coordToParent.get(c.toString())!
-    ) {
-      path.push(c);
-    }
+    switch (extraContext) {
+      case "STUCK": {
+        return [];
+      }
+      case "EXHAUSTED": {
+        return [...this.visitedRectCoords]
+          .map(KeyToCoord)
+          .filter(([r, c]) => isRectPathType(this.#maze[r][c]))
+          .map((coord) => ({
+            coord,
+            newRect: "PathAbandoned",
+          }));
+      }
+      case "FOUND": {
+        let path = new Set<string>();
+        for (
+          let c = currentCoord;
+          c !== undefined;
+          c = this.coordToParent.get(CoordToKey(c))!
+        ) {
+          path.add(CoordToKey(c));
+        }
+        const pathDiffs: SingleMazeDiff[] = [...path]
+          .map(KeyToCoord)
+          .filter(([r, c]) => isRectPathType(this.#maze[r][c]))
+          .map((coord) => ({
+            coord,
+            newRect: "PathTaken",
+          }));
 
-    return path
-      .filter((c) => isRectPathType(this.#maze[c[0]][c[1]]))
-      .map((coord) => ({
-        coord,
-        newRect: "PathTaken",
-      }));
+        let abandoned = this.visitedRectCoords.difference(path);
+        const abandonedDiffs: SingleMazeDiff[] = [...abandoned]
+          .map(KeyToCoord)
+          .filter(([r, c]) => isRectPathType(this.#maze[r][c]))
+          .map((coord) => ({
+            coord,
+            newRect: "PathAbandoned",
+          }));
+
+        return [...abandonedDiffs, ...pathDiffs];
+      }
+    }
   }
 }
