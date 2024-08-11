@@ -37,7 +37,12 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Provider store={store}>
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="index"
+            options={{
+              headerTitle: "Amaze",
+            }}
+          />
           <Stack.Screen name="+not-found" />
         </Stack>
       </Provider>
