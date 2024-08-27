@@ -8,10 +8,15 @@ import {
 } from "@/features/maze/maze-slice";
 import { SearchNameToSearch } from "@/features/search/common";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import useDimensions from "@/hooks/useDimensions";
 import { useEffect, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 
 export default function MazeScreen() {
+  const { height: winHeight, width: winWidth, wp } = useDimensions();
+  const winMode: "Landscape" | "Portrait" =
+    winHeight > winWidth ? "Portrait" : "Landscape";
+
   const dispatch = useAppDispatch();
 
   const maze = useAppSelector((state) => state.maze.rectangles);
@@ -67,13 +72,20 @@ export default function MazeScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        winMode == "Landscape"
+          ? styles.containerLandscape
+          : styles.containerPortrait,
+      ]}
+    >
       <Maze
         maze={maze}
         onRectPress={setRectAt}
         rectDimensions={() => ({
-          height: 32,
-          width: 32,
+          height: wp(3),
+          width: wp(3),
         })}
         style={styles}
       />
@@ -84,19 +96,20 @@ export default function MazeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-
     display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
+    flex: 1,
     alignItems: "center",
+    justifyContent: "space-evenly",
     gap: 5,
-
-    paddingHorizontal: 100,
+    padding: 10,
+  },
+  containerLandscape: {
+    flexDirection: "row",
+  },
+  containerPortrait: {
+    flexDirection: "column",
   },
   maze: {
-    flex: 1,
-
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
