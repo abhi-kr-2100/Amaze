@@ -1,15 +1,14 @@
 import Controls from "@/components/Controls";
 import Maze from "@/components/Maze";
-import { RECTANGLE_NAMES } from "@/components/rectangles/common";
 import { searchingStatusChanged } from "@/features/controls/controls-slice";
-import { Coord2D } from "@/features/maze/common";
+import { Coord2D, findRects } from "@/features/maze/common";
 import {
   rectangleChanged,
   rectanglesChanged,
 } from "@/features/maze/maze-slice";
 import { SearchNameToSearch } from "@/features/search/common";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 
 export default function MazeScreen() {
@@ -25,6 +24,9 @@ export default function MazeScreen() {
   );
   const isSearching = useAppSelector((state) => state.controls.isSearching);
 
+  const agents = useMemo(() => findRects(maze, "Agent"), [maze]);
+  const treasures = useMemo(() => findRects(maze, "Treasure"), [maze]);
+
   useEffect(() => {
     if (!isSearching) {
       return;
@@ -32,8 +34,8 @@ export default function MazeScreen() {
 
     const search = new SearchNameToSearch[searchAlgorithmName](
       maze,
-      [[maze.length - 1, 0]],
-      [[0, maze[0].length - 1]]
+      agents,
+      treasures
     );
 
     let diffs = [];
