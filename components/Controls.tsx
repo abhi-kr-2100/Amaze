@@ -7,8 +7,7 @@ import { SearchNameToFriendlyName } from "@/features/search/common";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { FontAwesome } from "@expo/vector-icons";
 import { createElement } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import { RECTANGLE_NAMES, RectangleToComponent } from "./rectangles/common";
 
@@ -34,26 +33,26 @@ export default function Controls() {
         data={searchAlgorithms}
         onSelect={(item) => dispatch(searchAlgorithmChanged(item.id))}
         renderButton={() => (
-          <TouchableOpacity style={styles.dropdownButton}>
+          <Pressable style={styles.dropdownButton}>
             <Text style={styles.dropdownButtonText}>
               {SearchNameToFriendlyName[selectedSearchAlgorithm]}
             </Text>
             <FontAwesome name="chevron-down" size={16} color="#000" />
-          </TouchableOpacity>
+          </Pressable>
         )}
         renderItem={(item) => (
-          <TouchableOpacity style={styles.dropdownItem}>
+          <Pressable style={styles.dropdownItem}>
             <Text style={styles.dropdownItemText}>{item.title}</Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
       />
-      <TouchableOpacity
+      <Pressable
         onPress={() => dispatch(searchingStatusChanged(true))}
         disabled={isSearching}
         style={styles.searchButton}
       >
         <Text style={styles.searchButtonText}>Search!</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }
@@ -67,17 +66,14 @@ function RectSelection() {
   return (
     <View style={styles.rectSelection}>
       {RECTANGLE_NAMES.map((r) => (
-        <TouchableOpacity
-          key={r}
-          onPress={() => dispatch(selectedRectNameChanged(r))}
-        >
+        <Pressable key={r} onPress={() => dispatch(selectedRectNameChanged(r))}>
           <View style={selectedRectName === r && styles.selectedRect}>
             {createElement(RectangleToComponent[r], {
               height: 28,
               width: 28,
             })}
           </View>
-        </TouchableOpacity>
+        </Pressable>
       ))}
     </View>
   );

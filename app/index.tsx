@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import useDimensions from "@/hooks/useDimensions";
 import { FontAwesome } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function MazeScreen() {
   const { height: winHeight, width: winWidth, wp } = useDimensions();
@@ -115,9 +115,9 @@ export default function MazeScreen() {
       {error && (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity onPress={dismissError}>
+          <Pressable onPress={dismissError}>
             <FontAwesome name="close" size={20} color="white" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       )}
     </View>
