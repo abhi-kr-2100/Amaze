@@ -45,40 +45,41 @@ export default function MazeScreen() {
     }
 
     const performSearch = () => {
-      try {
-        const search = new SearchNameToSearch[searchAlgorithmName](
-          maze,
-          agents,
-          treasures
-        );
+      const search = new SearchNameToSearch[searchAlgorithmName](
+        maze,
+        agents,
+        treasures
+      );
 
-        let diffs = [];
-        let i = 0;
-        for (var diff of search) {
-          ++i;
+      let diffs = [];
+      let i = 0;
+      for (var diff of search) {
+        ++i;
 
-          diffs.push(...diff);
+        diffs.push(...diff);
 
-          if (i >= 10000) {
-            break;
-          }
+        if (i >= 10000) {
+          break;
         }
-
-        dispatch(rectanglesChanged(diffs));
-      } catch (err) {
-        if (err instanceof InvalidAgentOrTreasureCountError) {
-          setError(
-            "Error: There must be exactly 1 agent and 1 treasure on the maze."
-          );
-        } else {
-          setError("An unknown error occurred.");
-        }
-      } finally {
-        dispatch(searchingStatusChanged(false));
       }
+
+      return diffs;
     };
 
-    performSearch();
+    try {
+      const diffs = performSearch();
+      dispatch(rectanglesChanged(diffs));
+    } catch (err) {
+      if (err instanceof InvalidAgentOrTreasureCountError) {
+        setError(
+          "Error: There must be exactly 1 agent and 1 treasure on the maze."
+        );
+      } else {
+        setError("An unknown error occurred.");
+      }
+    } finally {
+      dispatch(searchingStatusChanged(false));
+    }
   }, [isSearching]);
 
   const setRectAt = ([r, c]: Coord2D) => {
