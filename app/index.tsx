@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import useDimensions from "@/hooks/useDimensions";
 import { FontAwesome } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
-import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function MazeScreen() {
   const { height: winHeight, width: winWidth, wp } = useDimensions();

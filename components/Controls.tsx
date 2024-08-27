@@ -5,12 +5,12 @@ import {
 } from "@/features/controls/controls-slice";
 import { SearchNameToFriendlyName } from "@/features/search/common";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { createElement } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import SelectDropdown from "react-native-select-dropdown";
 import { RECTANGLE_NAMES, RectangleToComponent } from "./rectangles/common";
-import { createElement } from "react";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { FontAwesome } from "@expo/vector-icons";
 
 const searchAlgorithms = Object.entries(SearchNameToFriendlyName).map(
   ([id, title]) => ({
@@ -47,11 +47,13 @@ export default function Controls() {
           </TouchableOpacity>
         )}
       />
-      <Button
-        title="Search!"
+      <TouchableOpacity
         onPress={() => dispatch(searchingStatusChanged(true))}
         disabled={isSearching}
-      />
+        style={styles.searchButton}
+      >
+        <Text style={styles.searchButtonText}>Search!</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -117,5 +119,22 @@ const styles = StyleSheet.create({
   dropdownItemText: {
     fontSize: 16,
     color: "#333",
+  },
+  searchButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 12,
+    backgroundColor: "#0a7ea4",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#0a7ea4",
+  },
+  searchButtonText: {
+    fontSize: 16,
+    color: "#fff",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    letterSpacing: 2,
   },
 });
