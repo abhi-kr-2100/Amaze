@@ -241,7 +241,7 @@ class GeneralizableAStarBasedSearchIterator
             newRect: "PathTaken",
           }));
 
-        let abandoned = this.visitedRectCoords.difference(path);
+        let abandoned = setDifference(this.visitedRectCoords, path);
         const abandonedDiffs: SingleMazeDiff[] = [...abandoned]
           .map(KeyToCoord)
           .filter(([r, c]) => isRectPathType(this.#maze[r][c]))
@@ -254,4 +254,9 @@ class GeneralizableAStarBasedSearchIterator
       }
     }
   }
+}
+
+// The Hermes JS engine doesn't seem to support Set.difference() yet.
+function setDifference<T>(set1: Set<T>, set2: Set<T>): Set<T> {
+  return new Set([...set1].filter((x) => !set2.has(x)));
 }
