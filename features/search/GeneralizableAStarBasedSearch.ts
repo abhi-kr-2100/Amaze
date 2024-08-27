@@ -22,7 +22,7 @@ export default class GeneralizableAStarBasedSearch implements ISearch {
     heuristicFn: HeuristicFn,
     costFn: CostFn
   ) {
-    if (agents.length !== 1 && treasures.length !== 1) {
+    if (agents.length !== 1 || treasures.length !== 1) {
       throw new Error(
         "Search: only single agent, single treasure search is supported."
       );
@@ -77,7 +77,7 @@ class GeneralizableAStarBasedSearchIterator
     heuristicFn: HeuristicFn,
     costFn: CostFn
   ) {
-    if (agents.length !== 1 && treasures.length !== 1) {
+    if (agents.length !== 1 || treasures.length !== 1) {
       throw new Error(
         "SearchIterator: only single agent, single treasure search is supported."
       );
