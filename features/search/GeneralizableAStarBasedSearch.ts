@@ -3,6 +3,7 @@ import ISearch, { SingleMazeDiff } from "./ISearch";
 import { Coord2D, CoordToKey, KeyToCoord } from "../maze/common";
 import shuffle from "lodash/shuffle";
 import { CostFn, HeuristicFn, NextCoordIdxFn } from "./common";
+import { InvalidAgentOrTreasureCountError } from "./errors";
 
 export default class GeneralizableAStarBasedSearch implements ISearch {
   #maze: RectangleName[][];
@@ -23,7 +24,7 @@ export default class GeneralizableAStarBasedSearch implements ISearch {
     costFn: CostFn
   ) {
     if (agents.length !== 1 || treasures.length !== 1) {
-      throw new Error(
+      throw new InvalidAgentOrTreasureCountError(
         "Search: only single agent, single treasure search is supported."
       );
     }
@@ -78,7 +79,7 @@ class GeneralizableAStarBasedSearchIterator
     costFn: CostFn
   ) {
     if (agents.length !== 1 || treasures.length !== 1) {
-      throw new Error(
+      throw new InvalidAgentOrTreasureCountError(
         "SearchIterator: only single agent, single treasure search is supported."
       );
     }

@@ -7,6 +7,7 @@ import {
   rectanglesChanged,
 } from "@/features/maze/maze-slice";
 import { SearchNameToSearch } from "@/features/search/common";
+import { InvalidAgentOrTreasureCountError } from "@/features/search/errors";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import useDimensions from "@/hooks/useDimensions";
 import { FontAwesome } from "@expo/vector-icons";
@@ -65,7 +66,13 @@ export default function MazeScreen() {
 
         dispatch(rectanglesChanged(diffs));
       } catch (err) {
-        setError("An error occured.");
+        if (err instanceof InvalidAgentOrTreasureCountError) {
+          setError(
+            "Error: There must be exactly 1 agent and 1 treasure on the maze."
+          );
+        } else {
+          setError("An unknown error occurred.");
+        }
       } finally {
         dispatch(searchingStatusChanged(false));
       }
