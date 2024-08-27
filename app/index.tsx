@@ -9,8 +9,9 @@ import {
 import { SearchNameToSearch } from "@/features/search/common";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import useDimensions from "@/hooks/useDimensions";
-import { useEffect, useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { useEffect, useMemo, useState } from "react";
+import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function MazeScreen() {
   const { height: winHeight, width: winWidth, wp } = useDimensions();
@@ -32,32 +33,45 @@ export default function MazeScreen() {
   const agents = useMemo(() => findRects(maze, "Agent"), [maze]);
   const treasures = useMemo(() => findRects(maze, "Treasure"), [maze]);
 
+  const [error, setError] = useState<string | null>(null);
+  const dismissError = () => {
+    setError(null);
+  };
+
   useEffect(() => {
     if (!isSearching) {
       return;
     }
 
-    const search = new SearchNameToSearch[searchAlgorithmName](
-      maze,
-      agents,
-      treasures
-    );
+    const performSearch = () => {
+      try {
+        const search = new SearchNameToSearch[searchAlgorithmName](
+          maze,
+          agents,
+          treasures
+        );
 
-    let diffs = [];
+        let diffs = [];
+        let i = 0;
+        for (var diff of search) {
+          ++i;
 
-    let i = 0;
-    for (var diff of search) {
-      ++i;
+          diffs.push(...diff);
 
-      diffs.push(...diff);
+          if (i >= 10000) {
+            break;
+          }
+        }
 
-      if (i >= 10000) {
-        break;
+        dispatch(rectanglesChanged(diffs));
+      } catch (err) {
+        setError("An error occured.");
+      } finally {
+        dispatch(searchingStatusChanged(false));
       }
-    }
+    };
 
-    dispatch(searchingStatusChanged(false));
-    dispatch(rectanglesChanged(diffs));
+    performSearch();
   }, [isSearching]);
 
   const setRectAt = ([r, c]: Coord2D) => {
@@ -90,6 +104,14 @@ export default function MazeScreen() {
         style={styles}
       />
       <Controls />
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity onPress={dismissError}>
+            <FontAwesome name="close" size={20} color="white" />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -124,5 +146,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
 
     gap: 5,
+  },
+  errorContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "red",
+    position: "absolute",
+    bottom: 10,
+    left: 10,
+    right: 10,
+    borderRadius: 5,
+  },
+  errorText: {
+    color: "white",
+    fontSize: 16,
+    flex: 1,
+    marginRight: 10,
   },
 });
