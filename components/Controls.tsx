@@ -10,6 +10,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import { RECTANGLE_NAMES, RectangleToComponent } from "./rectangles/common";
 import { createElement } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { FontAwesome } from "@expo/vector-icons";
 
 const searchAlgorithms = Object.entries(SearchNameToFriendlyName).map(
   ([id, title]) => ({
@@ -33,11 +34,18 @@ export default function Controls() {
         data={searchAlgorithms}
         onSelect={(item) => dispatch(searchAlgorithmChanged(item.id))}
         renderButton={() => (
-          <View>
-            <Text>{SearchNameToFriendlyName[selectedSearchAlgorithm]}</Text>
-          </View>
+          <TouchableOpacity style={styles.dropdownButton}>
+            <Text style={styles.dropdownButtonText}>
+              {SearchNameToFriendlyName[selectedSearchAlgorithm]}
+            </Text>
+            <FontAwesome name="chevron-down" size={16} color="#000" />
+          </TouchableOpacity>
         )}
-        renderItem={(item) => <Text>{item.title}</Text>}
+        renderItem={(item) => (
+          <TouchableOpacity style={styles.dropdownItem}>
+            <Text style={styles.dropdownItemText}>{item.title}</Text>
+          </TouchableOpacity>
+        )}
       />
       <Button
         title="Search!"
@@ -87,5 +95,27 @@ const styles = StyleSheet.create({
   selectedRect: {
     borderWidth: 2,
     borderRadius: 5,
+  },
+  dropdownButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 12,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+  dropdownButtonText: {
+    fontSize: 16,
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  dropdownItemText: {
+    fontSize: 16,
+    color: "#333",
   },
 });
