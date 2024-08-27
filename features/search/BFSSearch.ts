@@ -12,12 +12,6 @@ export default class BFSSearch implements ISearch {
     agents: Coord2D[],
     treasures: Coord2D[]
   ) {
-    if (agents.length !== 1 || treasures.length !== 1) {
-      throw new Error(
-        "BFS: only single agent, single treasure search is supported."
-      );
-    }
-
     this.#bfs = new GeneralizableAStarBasedSearch(
       maze,
       agents,
