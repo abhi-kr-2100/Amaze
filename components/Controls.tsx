@@ -76,6 +76,7 @@ function RectSelection() {
             {createElement(RectangleToComponent[r], {
               height: 28,
               width: 28,
+              style: styles.rect,
             })}
           </View>
         </Pressable>
@@ -88,6 +89,9 @@ const styles = StyleSheet.create({
   root: {
     display: "flex",
     gap: 10,
+  },
+  rect: {
+    borderRadius: 3,
   },
   rectSelection: {
     display: "flex",
