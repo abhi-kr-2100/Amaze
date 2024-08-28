@@ -1,7 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import defaultMaze from "./default-maze";
 import fillingStrategies, { FillingStrategy } from "./filling-strategies";
-import { RectangleName } from "@/components/rectangles/common";
+import {
+  HISTORICAL_RECTS,
+  RectangleName,
+} from "@/components/rectangles/common";
 import { SingleMazeDiff } from "../search/ISearch";
 import { Coord2D } from "./common";
 
@@ -60,6 +63,18 @@ const mazeSlice = createSlice({
         state.rectangles[diff.coord[0]][diff.coord[1]] = diff.newRect;
       }
     },
+
+    historicalRectsCleared(state) {
+      state.rectangles.forEach((row, r) =>
+        row.forEach((rect, c) => {
+          if (!HISTORICAL_RECTS.includes(rect)) {
+            return;
+          }
+
+          state.rectangles[r][c] = "Path";
+        })
+      );
+    },
   },
 });
 
@@ -68,5 +83,6 @@ export const {
   fillingStrategyChanged,
   rectangleChanged,
   rectanglesChanged,
+  historicalRectsCleared,
 } = mazeSlice.actions;
 export default mazeSlice.reducer;

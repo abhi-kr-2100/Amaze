@@ -3,6 +3,7 @@ import Maze from "@/components/Maze";
 import { searchingStatusChanged } from "@/features/controls/controls-slice";
 import { Coord2D, findRects } from "@/features/maze/common";
 import {
+  historicalRectsCleared,
   rectangleChanged,
   rectanglesChanged,
 } from "@/features/maze/maze-slice";
@@ -67,6 +68,7 @@ export default function MazeScreen() {
     };
 
     try {
+      dispatch(historicalRectsCleared());
       const diffs = performSearch();
       dispatch(rectanglesChanged(diffs));
     } catch (err) {

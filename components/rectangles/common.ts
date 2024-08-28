@@ -42,6 +42,14 @@ export const RECTANGLE_NAMES = [
   "PathAbandoned",
 ] as RectangleName[];
 
+// These are rectangles that denote their history; i.e., whether this path
+// was abaondoned, taken, etc.
+export const HISTORICAL_RECTS = [
+  "PathVisited",
+  "PathTaken",
+  "PathAbandoned",
+] as RectangleName[];
+
 export function isRectPathType(rect: RectangleName) {
   return rect.startsWith("Path");
 }
