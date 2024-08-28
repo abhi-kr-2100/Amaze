@@ -15,7 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function MazeScreen() {
-  const { height: winHeight, width: winWidth, wp } = useDimensions();
+  const { height: winHeight, width: winWidth, wp, hp } = useDimensions();
   const winMode: "Landscape" | "Portrait" =
     winHeight > winWidth ? "Portrait" : "Landscape";
 
@@ -106,8 +106,8 @@ export default function MazeScreen() {
         maze={maze}
         onRectPress={setRectAt}
         rectDimensions={() => ({
-          height: wp(3),
-          width: wp(3),
+          height: winMode === "Portrait" ? hp(3) : wp(3),
+          width: winMode === "Portrait" ? hp(3) : wp(3),
         })}
         style={styles}
       />
