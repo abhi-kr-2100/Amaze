@@ -145,6 +145,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
 
+    backgroundColor: "grey",
+    padding: 5,
+    borderRadius: 5,
     gap: 5,
   },
   mazeRow: {

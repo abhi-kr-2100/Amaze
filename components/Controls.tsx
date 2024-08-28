@@ -67,7 +67,12 @@ function RectSelection() {
     <View style={styles.rectSelection}>
       {RECTANGLE_NAMES.map((r) => (
         <Pressable key={r} onPress={() => dispatch(selectedRectNameChanged(r))}>
-          <View style={selectedRectName === r && styles.selectedRect}>
+          <View
+            style={[
+              styles.selectableRect,
+              selectedRectName === r && styles.selectedRect,
+            ]}
+          >
             {createElement(RectangleToComponent[r], {
               height: 28,
               width: 28,
@@ -90,9 +95,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  selectedRect: {
+  selectableRect: {
     borderWidth: 2,
     borderRadius: 5,
+    borderColor: "grey",
+  },
+  selectedRect: {
+    borderWidth: 5,
+    borderColor: "#0a7ea4",
   },
   dropdownButton: {
     flexDirection: "row",
