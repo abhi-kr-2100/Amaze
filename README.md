@@ -2,6 +2,8 @@
 
 Amaze is a powerful, multiplatform maze search visualizer built with React Native. It provides an interactive and educational tool for exploring various pathfinding algorithms in maze-like environments.
 
+![Screenshot of Amaze](https://raw.githubusercontent.com/abhi-kr-2100/Amaze/master/assets/images/Screenshot.png?token=GHSAT0AAAAAACWRP6DXQLHTZ4VE3ZUAGDZGZWPID6A)
+
 ## Features
 
 - **Multiple Search Algorithms**: Supports Depth-First Search (DFS), Breadth-First Search (BFS), Greedy Best-First Search, and A* Search.
