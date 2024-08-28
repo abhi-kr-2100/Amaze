@@ -2,7 +2,7 @@ import fillingStrategies, { FillingStrategy } from "./filling-strategies";
 import { MazeState } from "./maze-slice";
 
 export const DEFAULT_NROWS = 10;
-export const DEFAULT_NCOLS = 20;
+export const DEFAULT_NCOLS = 10;
 
 export const DEFAULT_FILLING_STRATEGY: FillingStrategy =
   "RandomWithAAndTOnCorners";
